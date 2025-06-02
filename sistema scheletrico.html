@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sito sul sistema scheletrico per l'Operatore Socio-Sanitario (OSS): scopri le ossa, le loro funzioni e quiz interattivi.">
+    <meta name="keywords" content="sistema scheletrico, OSS, scheletro assile, scheletro appendicolare, quiz sistema scheletrico">
+    <title>Il Sistema Scheletrico</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            color: #e0e0e0;
+            overflow-x: hidden;
+            position: relative;
+            font-size: 18px;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/circuit-pattern.png');
+            opacity: 0.05;
+            z-index: -1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            position: relative;
+        }
+        header {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3.5em;
+            color: #00d4ff;
+            text-shadow: 0 0 10px #00d4ff;
+            animation: glow 2s infinite alternate;
+        }
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.2em;
+            color: #ecf0f1;
+        }
+        nav {
+            background: #34495e;
+            padding: 10px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #3498db;
+        }
+        section {
+            background: rgba(20, 40, 60, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            margin-bottom: 50px;
+            animation: fadeIn 1.5s ease-in;
+            border: 1px solid #00d4ff;
+        }
+        section h2 {
+            color: #00d4ff;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 0 0 5px #00d4ff;
+        }
+        section h3 {
+            color: #00d4ff;
+            font-size: 1.5em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        section p, section ul {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        section ul {
+            list-style-type: disc;
+            padding-left: 40px;
+        }
+        section ul ul {
+            list-style-type: circle;
+            padding-left: 30px;
+        }
+        .quiz-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .quiz-selector {
+            margin-bottom: 20px;
+        }
+        .quiz-selector select {
+            padding: 10px;
+            font-size: 1.2em;
+            background: rgba(30, 50, 70, 0.95);
+            color: #e0e0e0;
+            border: 1px solid #00d4ff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .quiz-timer {
+            font-size: 1.5em;
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+        .quiz-balls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .quiz-ball {
+            width: 40px;
+            height: 40px;
+            background: rgba(30, 50, 70, 0.95);
+            border: 2px solid #00d4ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            color: #e0e0e0;
+            transition: background 0.3s ease;
+        }
+        .quiz-ball.correct {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        .quiz-ball.incorrect {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 10px #ff0000;
+        }
+        .quiz-question {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+        .quiz-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .quiz-option {
+            background: rgba(30, 50, 70, 0.95);
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 1px solid #00d4ff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 1.1em;
+        }
+        .quiz-option:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+        .quiz-feedback {
+            margin-top: 20px;
+            font-size: 1.2em;
+            display: none;
+        }
+        .correct {
+            color: #00ff00;
+        }
+        .incorrect {
+            color: #ff0000;
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .retry-button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .retry-button:hover {
+            background: #3498db;
+        }
+        footer {
+            background: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        footer p {
+            margin: 0;
+            font-size: 1em;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #00d4ff, 0 0 10px #00d4ff; }
+            to { text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff; }
+        }
+        @media (max-width: 768px) {
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+            section {
+                padding: 20px;
+            }
+            header h1 {
+                font-size: 2.5em;
+            }
+            header p {
+                font-size: 1em;
+            }
+            .quiz-options {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .quiz-ball {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Il Sistema Scheletrico</h1>
+        <p>Struttura e Funzioni per l'OSS</p>
+    </header>
+
+    <nav>
+        <a href="#introduzione">Introduzione</a>
+        <a href="#scheletro">Scheletro</a>
+        <a href="#quiz">Quiz</a>
+    </nav>
+
+    <div class="container">
+        <section id="introduzione">
+            <h2>Introduzione al Sistema Scheletrico</h2>
+            <p>Lo scheletro umano è una struttura di sostegno posta all’interno del corpo, formata da un insieme di ossa e tessuto cartilagineo che sostiene il corpo umano. Alla nascita lo scheletro umano presenta circa 270 ossa, da adulti le ossa si riducono a 206 legate tra loro da 68 articolazioni: durante lo sviluppo, alcune ossa si uniscono tra di loro. In un adulto medio, lo scheletro rappresenta circa il 20% del peso corporeo. Lo scheletro può essere suddiviso in ossa del capo, ossa del tronco e ossa degli arti.</p>
+        </section>
+
+        <section id="scheletro">
+            <h2>Struttura e Funzioni dello Scheletro</h2>
+            <h3>Funzioni dello Scheletro</h3>
+            <ul>
+                <li><strong>Sostegno:</strong> Sostiene il corpo umano.</li>
+                <li><strong>Protezione:</strong> Protegge parti molli e delicate, come la scatola cranica (cervello), la gabbia toracica (polmoni), la colonna vertebrale (midollo spinale e osseo).</li>
+                <li><strong>Equilibrio:</strong> Insieme a muscoli e articolazioni, sotto il controllo dei nervi.</li>
+                <li><strong>Movimento:</strong> Connesso ai muscoli.</li>
+                <li><strong>Eritropoietica ed emopoietica:</strong> Produzione di globuli rossi, bianchi e piastrine tramite il midollo osseo.</li>
+                <li><strong>Plastica:</strong> Dà forma al corpo.</li>
+                <li><strong>Deposito di sali minerali:</strong> Immagazzina minerali essenziali.</li>
+            </ul>
+
+            <h3>Articolazioni</h3>
+            <p>Le ossa sono connesse tra loro da formazioni dette articolazioni, classificabili in 3 gruppi:</p>
+            <ul>
+                <li><strong>Mobili (diartrosi):</strong> Permettono ampi movimenti (anca, gomito, ginocchio, spalla). Sono sinoviali, con capsula articolare e liquido sinoviale.</li>
+                <li><strong>Semi-mobili (anfiartrosi):</strong> Permettono movimenti limitati (vertebre). Sono prevalentemente cartilaginee.</li>
+                <li><strong>Fisse o suture (sinartrosi):</strong> Come quelle del cranio, fibrose, per connessione.</li>
+            </ul>
+            <p>L’unico osso senza articolazioni è l’osso ioide.</p>
+
+            <h3>Segmenti dello Scheletro</h3>
+            <p>Lo scheletro di un adulto è formato da circa 206 ossa, suddivise in:</p>
+            <ul>
+                <li><strong>Scheletro assile:</strong> 80 ossa (testa, colonna vertebrale, gabbia toracica).</li>
+                <li><strong>Scheletro appendicolare:</strong> 126 ossa (arti superiori, arti inferiori, cinture).</li>
+            </ul>
+            <p>Le connessioni tra scheletro assile e appendicolare sono le cinture:</p>
+            <ul>
+                <li><strong>Cintura scapolare:</strong> Clavicola e scapola.</li>
+                <li><strong>Cintura pelvica:</strong> Osso dell’anca e osso sacro.</li>
+            </ul>
+
+            <h3>Classificazione delle Ossa</h3>
+            <p>Esistono due tipi di architettura ossea:</p>
+            <ul>
+                <li><strong>Osso compatto:</strong> Appare omogeneo.</li>
+                <li><strong>Osso spugnoso:</strong> Rete di sbarrette e lamine ossee con cavità.</li>
+            </ul>
+            <p>Le ossa si classificano in:</p>
+            <ul>
+                <li><strong>Ossa lunghe:</strong> Più lunghe che larghe, con diafisi (osso compatto) ed epifisi (osso spugnoso), es. femore, tibia, omero, radio, ulna.</li>
+                <li><strong>Ossa corte:</strong> Cuboidali, di osso spugnoso, es. polso e caviglia.</li>
+                <li><strong>Ossa piatte:</strong> Laminari, sottili, incurvate, con due strati di osso compatto e uno spugnoso, es. cranio, scapole, sterno, costole.</li>
+            </ul>
+            <p>L’osso è resistente alla tensione. La superficie è uno strato compatto di lamelle; internamente, le trabecole formano l’osso spugnoso. Il periostio riveste l’osso, attraversato da vasi e nervi. Nelle ossa lunghe e piatte, il midollo osseo rosso produce cellule sanguigne, mentre la diafisi contiene midollo giallo (riserva di lipidi). L’endostio riveste la cavità midollare.</p>
+        </section>
+
+        <section id="quiz">
+            <h2>Quiz: Testa le Tue Conoscenze sul Sistema Scheletrico</h2>
+            <p>Seleziona un quiz e rispondi alle 30 domande entro 30 minuti. Le palline si illumineranno man mano che procedi!</p>
+            <div class="quiz-container">
+                <div class="quiz-selector">
+                    <select id="quiz-select" onchange="selectQuiz()">
+                        <option value="0">Seleziona un Quiz</option>
+                        <option value="1">Quiz 1</option>
+                        <option value="2">Quiz 2</option>
+                        <option value="3">Quiz 3</option>
+                        <option value="4">Quiz 4</option>
+                        <option value="5">Quiz 5</option>
+                    </select>
+                </div>
+                <div class="quiz-timer" id="quiz-timer" style="display: none;">Tempo rimanente: 30:00</div>
+                <div class="quiz-balls" id="quiz-balls" style="display: none;"></div>
+                <div class="quiz-question" id="quiz-question"></div>
+                <div class="quiz-options" id="quiz-options"></div>
+                <div class="quiz-feedback" id="quiz-feedback"></div>
+                <div class="quiz-result" id="quiz-result"></div>
+                <button class="retry-button" id="retry-button" style="display: none;">Riprova</button>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2025 Il Sistema Scheletrico - Tutti i diritti riservati</p>
+    </footer>
+
+    <script>
+        const allQuestions = [
+            // Quiz 1
+            [
+                { question: "Quante ossa ha lo scheletro umano adulto?", options: ["206", "270", "80", "126"], correct: "206" },
+                { question: "Quante ossa ha lo scheletro alla nascita?", options: ["270", "206", "80", "126"], correct: "270" },
+                { question: "Quale percentuale del peso corporeo rappresenta lo scheletro?", options: ["20%", "10%", "30%", "50%"], correct: "20%" },
+                { question: "Quale struttura protegge il cervello?", options: ["Scatola cranica", "Gabbia toracica", "Colonna vertebrale", "Cintura pelvica"], correct: "Scatola cranica" },
+                { question: "Quale funzione dello scheletro è legata ai muscoli?", options: ["Movimento", "Protezione", "Sostegno", "Deposito"], correct: "Movimento" },
+                { question: "Quale tipo di articolazione è il ginocchio?", options: ["Mobile", "Semi-mobile", "Fissa", "Cartilaginea"], correct: "Mobile" },
+                { question: "Quale osso non ha articolazioni?", options: ["Osso ioide", "Femore", "Clavicola", "Sterno"], correct: "Osso ioide" },
+                { question: "Quante ossa ha lo scheletro assile?", options: ["80", "126", "206", "68"], correct: "80" },
+                { question: "Quale parte dello scheletro include gli arti?", options: ["Appendicolare", "Assile", "Cranio", "Torace"], correct: "Appendicolare" },
+                { question: "Quale cintura collega il braccio allo scheletro assile?", options: ["Cintura scapolare", "Cintura pelvica", "Colonna vertebrale", "Gabbia toracica"], correct: "Cintura scapolare" },
+                { question: "Quale tipo di osso è il femore?", options: ["Lungo", "Corto", "Piatto", "Spugnoso"], correct: "Lungo" },
+                { question: "Quale tessuto forma le ossa lunghe nella diafisi?", options: ["Osso compatto", "Osso spugnoso", "Cartilagine", "Midollo"], correct: "Osso compatto" },
+                { question: "Quale osso piatto si trova nel torace?", options: ["Sterno", "Femore", "Tibia", "Radio"], correct: "Sterno" },
+                { question: "Quale membrana riveste l’osso esternamente?", options: ["Periostio", "Endostio", "Capsula", "Sinovia"], correct: "Periostio" },
+                { question: "Dove si trova il midollo osseo rosso?", options: ["Ossa lunghe e piatte", "Solo ossa lunghe", "Solo ossa corte", "Solo cranio"], correct: "Ossa lunghe e piatte" },
+                { question: "Quale funzione produce globuli rossi?", options: ["Eritropoietica", "Sostegno", "Protezione", "Movimento"], correct: "Eritropoietica" },
+                { question: "Quale articolazione è fissa?", options: ["Suture del cranio", "Ginocchio", "Spalla", "Vertebre"], correct: "Suture del cranio" },
+                { question: "Quale osso è nella cintura pelvica?", options: ["Osso dell’anca", "Clavicola", "Scapola", "Sterno"], correct: "Osso dell’anca" },
+                { question: "Quale tipo di osso è cuboidale?", options: ["Corto", "Lungo", "Piatto", "Spugnoso"], correct: "Corto" },
+                { question: "Quale struttura protegge i polmoni?", options: ["Gabbia toracica", "Scatola cranica", "Colonna vertebrale", "Cintura scapolare"], correct: "Gabbia toracica" },
+                { question: "Quale tipo di osso contiene trabecole?", options: ["Spugnoso", "Compatto", "Lungo", "Piatto"], correct: "Spugnoso" },
+                { question: "Quale osso lungo è nel braccio?", options: ["Omero", "Femore", "Tibia", "Sterno"], correct: "Omero" },
+                { question: "Quale funzione dà forma al corpo?", options: ["Plastica", "Sostegno", "Protezione", "Movimento"], correct: "Plastica" },
+                { question: "Quale articolazione è semi-mobile?", options: ["Vertebre", "Spalla", "Ginocchio", "Cranio"], correct: "Vertebre" },
+                { question: "Quale osso è nella cintura scapolare?", options: ["Clavicola", "Osso dell’anca", "Sacro", "Tibia"], correct: "Clavicola" },
+                { question: "Dove si trova il midollo osseo giallo?", options: ["Diafisi", "Epifisi", "Cranio", "Sterno"], correct: "Diafisi" },
+                { question: "Quale tipo di articolazione è sinoviale?", options: ["Mobile", "Fissa", "Semi-mobile", "Fibrosa"], correct: "Mobile" },
+                { question: "Quale osso piatto è nel cranio?", options: ["Cranio", "Sterno", "Femore", "Tibia"], correct: "Cranio" },
+                { question: "Quale funzione immagazzina sali minerali?", options: ["Deposito", "Sostegno", "Movimento", "Protezione"], correct: "Deposito" },
+                { question: "Quale struttura protegge il midollo spinale?", options: ["Colonna vertebrale", "Gabbia toracica", "Scatola cranica", "Cintura pelvica"], correct: "Colonna vertebrale" }
+            ],
+            // Quiz 2
+            [
+                { question: "Quante articolazioni ha lo scheletro umano adulto?", options: ["68", "206", "80", "126"], correct: "68" },
+                { question: "Quale osso è corto?", options: ["Polso", "Femore", "Sterno", "Cranio"], correct: "Polso" },
+                { question: "Quale funzione è legata al midollo osseo?", options: ["Emopoietica", "Sostegno", "Protezione", "Movimento"], correct: "Emopoietica" },
+                { question: "Quale tipo di osso è la scapola?", options: ["Piatto", "Lungo", "Corto", "Spugnoso"], correct: "Piatto" },
+                { question: "Quale struttura riveste la cavità midollare?", options: ["Endostio", "Periostio", "Sinovia", "Capsula"], correct: "Endostio" },
+                { question: "Quale osso lungo è nella gamba?", options: ["Tibia", "Omero", "Sterno", "Clavicola"], correct: "Tibia" },
+                { question: "Quale articolazione è mobile?", options: ["Spalla", "Cranio", "Vertebre", "Suture"], correct: "Spalla" },
+                { question: "Quale parte dello scheletro ha 126 ossa?", options: ["Appendicolare", "Assile", "Cranio", "Torace"], correct: "Appendicolare" },
+                { question: "Quale cintura include l’osso sacro?", options: ["Cintura pelvica", "Cintura scapolare", "Colonna vertebrale", "Gabbia toracica"], correct: "Cintura pelvica" },
+                { question: "Quale osso è compatto nella diafisi?", options: ["Lungo", "Corto", "Piatto", "Spugnoso"], correct: "Lungo" },
+                { question: "Quale funzione sostiene il corpo?", options: ["Sostegno", "Protezione", "Movimento", "Deposito"], correct: "Sostegno" },
+                { question: "Quale osso piatto protegge i polmoni?", options: ["Costole", "Femore", "Tibia", "Radio"], correct: "Costole" },
+                { question: "Quale tipo di osso è la caviglia?", options: ["Corto", "Lungo", "Piatto", "Compatto"], correct: "Corto" },
+                { question: "Quale membrana contiene vasi sanguigni?", options: ["Periostio", "Endostio", "Capsula", "Sinovia"], correct: "Periostio" },
+                { question: "Quale osso produce globuli bianchi?", options: ["Midollo osseo rosso", "Midollo giallo", "Osso compatto", "Osso spugnoso"], correct: "Midollo osseo rosso" },
+                { question: "Quale articolazione è fibrosa?", options: ["Fissa", "Mobile", "Semi-mobile", "Sinoviale"], correct: "Fissa" },
+                { question: "Quale osso è nella cintura scapolare?", options: ["Scapola", "Osso dell’anca", "Sacro", "Tibia"], correct: "Scapola" },
+                { question: "Quale tipo di osso è laminare?", options: ["Piatto", "Lungo", "Corto", "Spugnoso"], correct: "Piatto" },
+                { question: "Quale struttura protegge il cervello?", options: ["Scatola cranica", "Gabbia toracica", "Colonna vertebrale", "Cintura pelvica"], correct: "Scatola cranica" },
+                { question: "Quale osso lungo è nel braccio?", options: ["Radio", "Femore", "Tibia", "Sterno"], correct: "Radio" },
+                { question: "Quale funzione è legata all’equilibrio?", options: ["Equilibrio", "Sostegno", "Protezione", "Deposito"], correct: "Equilibrio" },
+                { question: "Quale articolazione è cartilaginea?", options: ["Semi-mobile", "Mobile", "Fissa", "Sinoviale"], correct: "Semi-mobile" },
+                { question: "Quale osso è nella cintura pelvica?", options: ["Sacro", "Clavicola", "Scapola", "Sterno"], correct: "Sacro" },
+                { question: "Dove si trova il midollo osseo rosso?", options: ["Epifisi", "Diafisi", "Cranio", "Sterno"], correct: "Epifisi" },
+                { question: "Quale tipo di osso è omogeneo?", options: ["Compatto", "Spugnoso", "Lungo", "Piatto"], correct: "Compatto" },
+                { question: "Quale osso piatto è nel torace?", options: ["Sterno", "Femore", "Tibia", "Radio"], correct: "Sterno" },
+                { question: "Quale funzione produce piastrine?", options: ["Emopoietica", "Sostegno", "Movimento", "Protezione"], correct: "Emopoietica" },
+                { question: "Quale osso non si articola?", options: ["Osso ioide", "Omero", "Clavicola", "Sterno"], correct: "Osso ioide" },
+                { question: "Quale parte dello scheletro include la testa?", options: ["Assile", "Appendicolare", "Cintura", "Arti"], correct: "Assile" },
+                { question: "Quale struttura protegge il midollo spinale?", options: ["Colonna vertebrale", "Gabbia toracica", "Scatola cranica", "Cintura scapolare"], correct: "Colonna vertebrale" }
+            ],
+            // Quiz 3
+            [
+                { question: "Quale osso è nella gabbia toracica?", options: ["Costole", "Femore", "Omero", "Cranio"], correct: "Costole" },
+                { question: "Quale tipo di osso è la tibia?", options: ["Lungo", "Corto", "Piatto", "Spugnoso"], correct: "Lungo" },
+                { question: "Quale funzione è legata ai sali minerali?", options: ["Deposito", "Sostegno", "Movimento", "Protezione"], correct: "Deposito" },
+                { question: "Quale osso piatto è nel cranio?", options: ["Cranio", "Sterno", "Femore", "Tibia"], correct: "Cranio" },
+                { question: "Quale struttura contiene liquido sinoviale?", options: ["Articolazioni mobili", "Fisse", "Semi-mobili", "Fibrose"], correct: "Articolazioni mobili" },
+                { question: "Quale osso lungo è nel braccio?", options: ["Ulna", "Femore", "Sterno", "Clavicola"], correct: "Ulna" },
+                { question: "Quale articolazione è semi-mobile?", options: ["Vertebre", "Spalla", "Ginocchio", "Cranio"], correct: "Vertebre" },
+                { question: "Quale parte dello scheletro ha 80 ossa?", options: ["Assile", "Appendicolare", "Cintura", "Arti"], correct: "Assile" },
+                { question: "Quale cintura collega la gamba allo scheletro assile?", options: ["Cintura pelvica", "Cintura scapolare", "Colonna vertebrale", "Gabbia toracica"], correct: "Cintura pelvica" },
+                { question: "Quale osso è corto nel polso?", options: ["Carpali", "Femore", "Sterno", "Cranio"], correct: "Carpali" },
+                { question: "Quale funzione protegge i polmoni?", options: ["Protezione", "Sostegno", "Movimento", "Deposito"], correct: "Protezione" },
+                { question: "Quale osso piatto è nella spalla?", options: ["Scapola", "Femore", "Tibia", "Radio"], correct: "Scapola" },
+                { question: "Quale tipo di osso è spugnoso nelle epifisi?", options: ["Lungo", "Corto", "Piatto", "Compatto"], correct: "Lungo" },
+                { question: "Quale membrana riveste la cavità midollare?", options: ["Endostio", "Periostio", "Capsula", "Sinovia"], correct: "Endostio" },
+                { question: "Quale osso produce globuli rossi?", options: ["Midollo osseo rosso", "Midollo giallo", "Osso compatto", "Osso spugnoso"], correct: "Midollo osseo rosso" },
+                { question: "Quale articolazione è fissa?", options: ["Suture", "Ginocchio", "Spalla", "Vertebre"], correct: "Suture" },
+                { question: "Quale osso è nella cintura scapolare?", options: ["Clavicola", "Osso dell’anca", "Sacro", "Tibia"], correct: "Clavicola" },
+                { question: "Quale tipo di osso è la caviglia?", options: ["Corto", "Lungo", "Piatto", "Spugnoso"], correct: "Corto" },
+                { question: "Quale struttura protegge il cervello?", options: ["Scatola cranica", "Gabbia toracica", "Colonna vertebrale", "Cintura pelvica"], correct: "Scatola cranica" },
+                { question: "Quale osso lungo è nella gamba?", options: ["Femore", "Omero", "Sterno", "Clavicola"], correct: "Femore" },
+                { question: "Quale funzione dà forma al corpo?", options: ["Plastica", "Sostegno", "Protezione", "Movimento"], correct: "Plastica" },
+                { question: "Quale articolazione è mobile?", options: ["Gomito", "Cranio", "Vertebre", "Suture"], correct: "Gomito" },
+                { question: "Quale osso è nella cintura pelvica?", options: ["Osso dell’anca", "Clavicola", "Scapola", "Sterno"], correct: "Osso dell’anca" },
+                { question: "Dove si trova il midollo osseo giallo?", options: ["Diafisi", "Epifisi", "Cranio", "Sterno"], correct: "Diafisi" },
+                { question: "Quale tipo di osso è omogeneo?", options: ["Compatto", "Spugnoso", "Lungo", "Piatto"], correct: "Compatto" },
+                { question: "Quale osso piatto è nel torace?", options: ["Sterno", "Femore", "Tibia", "Radio"], correct: "Sterno" },
+                { question: "Quale funzione produce cellule sanguigne?", options: ["Eritropoietica", "Sostegno", "Movimento", "Protezione"], correct: "Eritropoietica" },
+                { question: "Quale osso non ha articolazioni?", options: ["Osso ioide", "Omero", "Clavicola", "Sterno"], correct: "Osso ioide" },
+                { question: "Quale parte dello scheletro include gli arti?", options: ["Appendicolare", "Assile", "Cintura", "Torace"], correct: "Appendicolare" },
+                { question: "Quale struttura protegge il midollo spinale?", options: ["Colonna vertebrale", "Gabbia toracica", "Scatola cranica", "Cintura scapolare"], correct: "Colonna vertebrale" }
+            ],
+            // Quiz 4
+            [
+                { question: "Quale osso è nella cintura scapolare?", options: ["Scapola", "Femore", "Tibia", "Sacro"], correct: "Scapola" },
+                { question: "Quale tipo di osso è il radio?", options: ["Lungo", "Corto", "Piatto", "Spugnoso"], correct: "Lungo" },
+                { question: "Quale funzione immagazzina minerali?", options: ["Deposito", "Sostegno", "Movimento", "Protezione"], correct: "Deposito" },
+                { question: "Quale osso piatto è nel cranio?", options: ["Cranio", "Sterno", "Femore", "Tibia"], correct: "Cranio" },
+                { question: "Quale struttura contiene trabecole?", options: ["Osso spugnoso", "Osso compatto", "Cartilagine", "Midollo"], correct: "Osso spugnoso" },
+                { question: "Quale osso lungo è nel braccio?", options: ["Omero", "Femore", "Sterno", "Clavicola"], correct: "Omero" },
+                { question: "Quale articolazione è semi-mobile?", options: ["Vertebre", "Spalla", "Ginocchio", "Cranio"], correct: "Vertebre" },
+                { question: "Quale parte dello scheletro ha 126 ossa?", options: ["Appendicolare", "Assile", "Cranio", "Torace"], correct: "Appendicolare" },
+                { question: "Quale cintura collega la gamba?", options: ["Cintura pelvica", "Cintura scapolare", "Colonna vertebrale", "Gabbia toracica"], correct: "Cintura pelvica" },
+                { question: "Quale osso è corto nella caviglia?", options: ["Tarsali", "Femore", "Sterno", "Cranio"], correct: "Tarsali" },
+                { question: "Quale funzione protegge il cervello?", options: ["Protezione", "Sostegno", "Movimento", "Deposito"], correct: "Protezione" },
+                { question: "Quale osso piatto è nel torace?", options: ["Costole", "Femore", "Tibia", "Radio"], correct: "Costole" },
+                { question: "Quale tipo di osso è spugnoso nelle epifisi?", options: ["Lungo", "Corto", "Piatto", "Compatto"], correct: "Lungo" },
+                { question: "Quale membrana riveste l’osso esternamente?", options: ["Periostio", "Endostio", "Capsula", "Sinovia"], correct: "Periostio" },
+                { question: "Quale osso produce piastrine?", options: ["Midollo osseo rosso", "Midollo giallo", "Osso compatto", "Osso spugnoso"], correct: "Midollo osseo rosso" },
+                { question: "Quale articolazione è sinoviale?", options: ["Mobile", "Fissa", "Semi-mobile", "Fibrosa"], correct: "Mobile" },
+                { question: "Quale osso è nella cintura pelvica?", options: ["Sacro", "Clavicola", "Scapola", "Sterno"], correct: "Sacro" },
+                { question: "Quale tipo di osso è laminare?", options: ["Piatto", "Lungo", "Corto", "Spugnoso"], correct: "Piatto" },
+                { question: "Quale struttura protegge i polmoni?", options: ["Gabbia toracica", "Scatola cranica", "Colonna vertebrale", "Cintura pelvica"], correct: "Gabbia toracica" },
+                { question: "Quale osso lungo è nella gamba?", options: ["Tibia", "Omero", "Sterno", "Clavicola"], correct: "Tibia" },
+                { question: "Quale funzione dà forma al corpo?", options: ["Plastica", "Sostegno", "Protezione", "Movimento"], correct: "Plastica" },
+                { question: "Quale articolazione è fissa?", options: ["Suture", "Ginocchio", "Spalla", "Vertebre"], correct: "Suture" },
+                { question: "Quale osso è nella cintura scapolare?", options: ["Clavicola", "Osso dell’anca", "Sacro", "Tibia"], correct: "Clavicola" },
+                { question: "Dove si trova il midollo osseo rosso?", options: ["Epifisi", "Diafisi", "Cranio", "Sterno"], correct: "Epifisi" },
+                { question: "Quale tipo di osso è omogeneo?", options: ["Compatto", "Spugnoso", "Lungo", "Piatto"], correct: "Compatto" },
+                { question: "Quale osso piatto è nella spalla?", options: ["Scapola", "Femore", "Tibia", "Radio"], correct: "Scapola" },
+                { question: "Quale funzione produce globuli bianchi?", options: ["Emopoietica", "Sostegno", "Movimento", "Protezione"], correct: "Emopoietica" },
+                { question: "Quale osso non ha articolazioni?", options: ["Osso ioide", "Omero", "Clavicola", "Sterno"], correct: "Osso ioide" },
+                { question: "Quale parte dello scheletro include la testa?", options: ["Assile", "Appendicolare", "Cintura", "Arti"], correct: "Assile" },
+                { question: "Quale struttura protegge il midollo spinale?", options: ["Colonna vertebrale", "Gabbia toracica", "Scatola cranica", "Cintura scapolare"], correct: "Colonna vertebrale" }
+            ],
+            // Quiz 5
+            [
+                { question: "Quale osso è nella cintura pelvica?", options: ["Osso dell’anca", "Femore", "Tibia", "Scapola"], correct: "Osso dell’anca" },
+                { question: "Quale tipo di osso è l’ulna?", options: ["Lungo", "Corto", "Piatto", "Spugnoso"], correct: "Lungo" },
+                { question: "Quale funzione è legata all’equilibrio?", options: ["Equilibrio", "Sostegno", "Movimento", "Protezione"], correct: "Equilibrio" },
+                { question: "Quale osso piatto è nel torace?", options: ["Sterno", "Femore", "Tibia", "Radio"], correct: "Sterno" },
+                { question: "Quale struttura contiene liquido sinoviale?", options: ["Articolazioni mobili", "Fisse", "Semi-mobili", "Fibrose"], correct: "Articolazioni mobili" },
+                { question: "Quale osso lungo è nella gamba?", options: ["Femore", "Omero", "Sterno", "Clavicola"], correct: "Femore" },
+                { question: "Quale articolazione è mobile?", options: ["Anca", "Cranio", "Vertebre", "Suture"], correct: "Anca" },
+                { question: "Quale parte dello scheletro ha 80 ossa?", options: ["Assile", "Appendicolare", "Cintura", "Arti"], correct: "Assile" },
+                { question: "Quale cintura collega il braccio?", options: ["Cintura scapolare", "Cintura pelvica", "Colonna vertebrale", "Gabbia toracica"], correct: "Cintura scapolare" },
+                { question: "Quale osso è corto nel polso?", options: ["Carpali", "Femore", "Sterno", "Cranio"], correct: "Carpali" },
+                { question: "Quale funzione sostiene il corpo?", options: ["Sostegno", "Protezione", "Movimento", "Deposito"], correct: "Sostegno" },
+                { question: "Quale osso piatto è nella spalla?", options: ["Scapola", "Femore", "Tibia", "Radio"], correct: "Scapola" },
+                { question: "Quale tipo di osso è spugnoso nelle epifisi?", options: ["Lungo", "Corto", "Piatto", "Compatto"], correct: "Lungo" },
+                { question: "Quale membrana riveste la cavità midollare?", options: ["Endostio", "Periostio", "Capsula", "Sinovia"], correct: "Endostio" },
+                { question: "Quale osso produce globuli rossi?", options: ["Midollo osseo rosso", "Midollo giallo", "Osso compatto", "Osso spugnoso"], correct: "Midollo osseo rosso" },
+                { question: "Quale articolazione è fibrosa?", options: ["Fissa", "Mobile", "Semi-mobile", "Sinoviale"], correct: "Fissa" },
+                { question: "Quale osso è nella cintura scapolare?", options: ["Clavicola", "Osso dell’anca", "Sacro", "Tibia"], correct: "Clavicola" },
+                { question: "Quale tipo di osso è la caviglia?", options: ["Corto", "Lungo", "Piatto", "Spugnoso"], correct: "Corto" },
+                { question: "Quale struttura protegge il cervello?", options: ["Scatola cranica", "Gabbia toracica", "Colonna vertebrale", "Cintura pelvica"], correct: "Scatola cranica" },
+                { question: "Quale osso lungo è nel braccio?", options: ["Radio", "Femore", "Tibia", "Sterno"], correct: "Radio" },
+                { question: "Quale funzione dà forma al corpo?", options: ["Plastica", "Sostegno", "Protezione", "Movimento"], correct: "Plastica" },
+                { question: "Quale articolazione è semi-mobile?", options: ["Vertebre", "Spalla", "Ginocchio", "Cranio"], correct: "Vertebre" },
+                { question: "Quale osso è nella cintura pelvica?", options: ["Sacro", "Clavicola", "Scapola", "Sterno"], correct: "Sacro" },
+                { question: "Dove si trova il midollo osseo giallo?", options: ["Diafisi", "Epifisi", "Cranio", "Sterno"], correct: "Diafisi" },
+                { question: "Quale tipo di osso è omogeneo?", options: ["Compatto", "Spugnoso", "Lungo", "Piatto"], correct: "Compatto" },
+                { question: "Quale osso piatto è nel cranio?", options: ["Cranio", "Femore", "Tibia", "Radio"], correct: "Cranio" },
+                { question: "Quale funzione produce piastrine?", options: ["Emopoietica", "Sostegno", "Movimento", "Protezione"], correct: "Emopoietica" },
+                { question: "Quale osso non ha articolazioni?", options: ["Osso ioide", "Omero", "Clavicola", "Sterno"], correct: "Osso ioide" },
+                { question: "Quale parte dello scheletro include gli arti?", options: ["Appendicolare", "Assile", "Cintura", "Torace"], correct: "Appendicolare" },
+                { question: "Quale struttura protegge il midollo spinale?", options: ["Colonna vertebrale", "Gabbia toracica", "Scatola cranica", "Cintura scapolare"], correct: "Colonna vertebrale" }
+            ]
+        ];
+
+        let currentQuiz = null;
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 30 * 60; // 30 minuti in secondi
+        let timerInterval;
+
+        const ballsContainer = document.getElementById('quiz-balls');
+        for (let i = 1; i <= 30; i++) {
+            const ball = document.createElement('div');
+            ball.className = 'quiz-ball';
+            ball.id = `ball-${i}`;
+            ball.innerText = i;
+            ballsContainer.appendChild(ball);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('quiz-timer').innerText = `Tempo rimanente: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function selectQuiz() {
+            const quizSelect = document.getElementById('quiz-select');
+            const selectedQuiz = parseInt(quizSelect.value);
+            if (selectedQuiz === 0) {
+                document.getElementById('quiz-timer').style.display = 'none';
+                document.getElementById('quiz-balls').style.display = 'none';
+                document.getElementById('quiz-question').innerText = '';
+                document.getElementById('quiz-options').innerHTML = '';
+                document.getElementById('quiz-feedback').style.display = 'none';
+                document.getElementById('quiz-result').innerHTML = '';
+                document.getElementById('retry-button').style.display = 'none';
+                clearInterval(timerInterval);
+                return;
+            }
+
+            currentQuiz = selectedQuiz - 1;
+            resetQuiz();
+        }
+
+        function loadQuizQuestion() {
+            const questionElement = document.getElementById('quiz-question');
+            const optionsElement = document.getElementById('quiz-options');
+            const feedbackElement = document.getElementById('quiz-feedback');
+            const resultElement = document.getElementById('quiz-result');
+            const retryButton = document.getElementById('retry-button');
+
+            if (currentQuestionIndex >= currentQuestions.length) {
+                endQuiz();
+                return;
+            }
+
+            const currentQuestion = currentQuestions[currentQuestionIndex];
+            questionElement.innerText = `Domanda ${currentQuestionIndex + 1}: ${currentQuestion.question}`;
+            optionsElement.innerHTML = '';
+            feedbackElement.style.display = 'none';
+            resultElement.innerHTML = '';
+            retryButton.style.display = 'none';
+
+            const shuffledOptions = shuffleArray([...currentQuestion.options]);
+            shuffledOptions.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'quiz-option';
+                optionElement.innerText = option;
+                optionElement.addEventListener('click', () => checkAnswer(option, currentQuestion.correct));
+                optionsElement.appendChild(optionElement);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            const feedbackElement = document.getElementById('quiz-feedback');
+            feedbackElement.style.display = 'block';
+            const currentBall = document.getElementById(`ball-${currentQuestionIndex + 1}`);
+            if (selected === correct) {
+                currentBall.classList.add('correct');
+                feedbackElement.innerText = 'Corretto! Ottimo lavoro!';
+                feedbackElement.className = 'quiz-feedback correct';
+                score++;
+            } else {
+                currentBall.classList.add('incorrect');
+                feedbackElement.innerText = `Sbagliato. La risposta corretta è: ${correct}.`;
+                feedbackElement.className = 'quiz-feedback incorrect';
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuizQuestion();
+            }, 1500);
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const questionElement = document.getElementById('quiz-question');
+            const optionsElement = document.getElementById('quiz-options');
+            const feedbackElement = document.getElementById('quiz-feedback');
+            const resultElement = document.getElementById('quiz-result');
+            const timerElement = document.getElementById('quiz-timer');
+            const retryButton = document.getElementById('retry-button');
+
+            questionElement.innerText = 'Quiz Completato!';
+            optionsElement.innerHTML = '';
+            feedbackElement.style.display = 'none';
+            timerElement.style.display = 'none';
+            retryButton.style.display = 'block';
+
+            if (score >= 21) {
+                resultElement.innerText = `Hai superato il test! Punteggio: ${score}/30`;
+                resultElement.style.color = '#00ff00';
+            } else {
+                resultElement.innerText = `Torna a studiare! Punteggio: ${score}/30`;
+                resultElement.style.color = '#ff0000';
+            }
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 30 * 60;
+            document.getElementById('quiz-timer').style.display = 'block';
+            document.getElementById('quiz-timer').innerText = 'Tempo rimanente: 30:00';
+            document.getElementById('quiz-balls').style.display = 'flex';
+            document.querySelectorAll('.quiz-ball').forEach(ball => {
+                ball.classList.remove('correct');
+                ball.classList.remove('incorrect');
+            });
+            currentQuestions = shuffleArray([...allQuestions[currentQuiz]]);
+            clearInterval(timerInterval);
+            startTimer();
+            loadQuizQuestion();
+        }
+
+        document.getElementById('retry-button').addEventListener('click', resetQuiz);
+    </script>
+</body>
+</html>
